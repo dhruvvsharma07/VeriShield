@@ -4,4 +4,3 @@ numpy
 easyocr
 Pillow
 inference-sdk
-# Temporarily removed face_recognition to get the core UI live
