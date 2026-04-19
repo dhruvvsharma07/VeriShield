@@ -2,6 +2,6 @@ streamlit
 opencv-python-headless
 numpy
 easyocr
-face_recognition
 Pillow
 inference-sdk
+# Temporarily removed face_recognition to get the core UI live
