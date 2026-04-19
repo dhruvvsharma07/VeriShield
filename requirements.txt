@@ -1,0 +1,7 @@
+streamlit
+opencv-python-headless
+numpy
+easyocr
+face_recognition
+Pillow
+inference-sdk
