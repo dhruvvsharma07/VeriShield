@@ -1,6 +1,7 @@
 streamlit
-opencv-python-headless
+opencv-python
 numpy
 easyocr
+face_recognition
 Pillow
 inference-sdk

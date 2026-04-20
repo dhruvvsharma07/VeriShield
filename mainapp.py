@@ -8,14 +8,15 @@ from inference_sdk import InferenceHTTPClient
 import hashlib
 import json
 from datetime import datetime
+import os
 
 # --- 1. GLOBAL CONFIGURATION (SECURE LAYER) ---
-# We removed the hardcoded key to protect your account.
-try:
-    ROBOFLOW_API_KEY = st.secrets["ROBOFLOW_API_KEY"]
-except Exception:
-    st.error("🔑 API Key Missing: Please add ROBOFLOW_API_KEY to Streamlit Secrets.")
-    st.stop() # Stops the app from running without the key
+# Hugging Face uses os.environ for secrets instead of st.secrets
+ROBOFLOW_API_KEY = os.getenv("ROBOFLOW_API_KEY")
+
+if not ROBOFLOW_API_KEY:
+    st.error("🔑 API Key Missing: Please add ROBOFLOW_API_KEY to Hugging Face Secrets.")
+    st.stop()
 
 MODEL_ID = "pan-card-zu7gu-uh5oo/1"
 API_URL = "https://serverless.roboflow.com"
@@ -64,17 +65,17 @@ if id_file and selfie_file:
             x1, y1, x2, y2 = x - w//2, y - h//2, x + w//2, y + h//2
             cv2.rectangle(annotated_img, (x1, y1), (x2, y2), (0, 255, 0), 3)
 
-    # C. MODIFIED BIOMETRICS (Bypass if library is missing)
-    try:
-        import face_recognition
+    # C. RESTORED BIOMETRICS (Full Logic)
+    with st.spinner("Performing biometric binding..."):
         id_face_encs = face_recognition.face_encodings(id_img)
         selfie_encs = face_recognition.face_encodings(selfie_img)
-        dist = float(face_recognition.face_distance([id_face_encs[0]], selfie_encs[0])[0]) if id_face_encs and selfie_encs else 1.0
-        face_match = (dist < tolerance)
-    except ImportError:
-        st.warning("⚠️ Biometric Engine is currently offline (Compilation Limit). Structural & OCR scanning only.")
-        dist = 0.5 # Neutral value
-        face_match = True # Bypass for demo
+        
+        if id_face_encs and selfie_encs:
+            dist = float(face_recognition.face_distance([id_face_encs[0]], selfie_encs[0])[0])
+            face_match = (dist < tolerance)
+        else:
+            dist = 1.0
+            face_match = False
 
     # D. OCR
     ocr_res = ocr_reader.readtext(id_img)
