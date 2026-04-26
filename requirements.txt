@@ -1,7 +1,0 @@
-streamlit
-opencv-python
-numpy
-easyocr
-face_recognition
-Pillow
-inference-sdk
